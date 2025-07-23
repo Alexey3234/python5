@@ -12,7 +12,6 @@ def driver():
 
 @pytest.fixture
 def base_url():
-    """Базовый URL тестируемого приложения"""
     return "https://stellarburgers.nomoreparties.site/"
 
 import time
@@ -20,10 +19,9 @@ import random
 
 @pytest.fixture
 def test_credentials():
-    """Тестовые учетные данные с уникальным email"""
-    random_part = int(time.time() * 1000)  # Более уникальное значение
+    random_part = int(time.time() * 1000)  
     return {
         "name": f"Тестовый Пользователь {random_part}",
         "email": f"user_{random_part}@example.com",
-        "password": f"Pass{random_part % 10000}"  # Более безопасный пароль
+        "password": f"Pass{random_part % 10000}"  
     }
