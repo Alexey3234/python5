@@ -1,37 +1,50 @@
 import pytest
 from selenium.webdriver.common.by import By
-import time
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from urls import BASE_URL  # Импортируем BASE_URL из модуля urls.py
 
 class TestNavigationFromAccount:
-    def login(self, driver, base_url, test_credentials):
-        driver.get(f"{base_url}login")
-        time.sleep(2)
+    """Тесты навигации из личного кабинета"""
+    
+    def test_navigate_to_constructor_via_button(self, driver, login):
+        """Тест перехода в конструктор через кнопку"""
+        login()  # Используем фикстуру login для авторизации
         
-        driver.find_element(By.XPATH, "//input[@name='name']").send_keys(test_credentials["email"])
-        driver.find_element(By.XPATH, "//input[@type='password']").send_keys(test_credentials["password"])
-        time.sleep(1)
+        # Переходим в личный кабинет
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//a[contains(@href, '/account')]"))
+        ).click()
         
-        driver.find_element(By.XPATH, "//button[text()='Войти']").click()
-        time.sleep(2)
+        # Кликаем на кнопку "Конструктор"
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//p[text()='Конструктор']"))
+        ).click()
+        
+        # Проверяем переход на главную страницу
+        WebDriverWait(driver, 10).until(
+            EC.url_to_be(BASE_URL)
+        )
+        assert driver.current_url == BASE_URL, \
+            f"После клика на 'Конструктор' ожидался переход на {BASE_URL}"
 
-    def test_navigate_to_constructor_via_button(self, driver, base_url, test_credentials):
-        self.login(driver, base_url, test_credentials)
-        driver.get(f"{base_url}account")
-        time.sleep(2)
+    def test_navigate_to_constructor_via_logo(self, driver, login):
+        """Тест перехода в конструктор через логотип"""
+        login()  # Используем фикстуру login для авторизации
         
-        driver.find_element(By.XPATH, "//p[text()='Конструктор']").click()
-        time.sleep(2)
+        # Переходим в личный кабинет
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//a[contains(@href, '/account')]"))
+        ).click()
         
-        assert driver.current_url == base_url, \
-            f"После клика на 'Конструктор' ожидался переход на {base_url}, но открыт {driver.current_url}"
-
-    def test_navigate_to_constructor_via_logo(self, driver, base_url, test_credentials):
-        self.login(driver, base_url, test_credentials)
-        driver.get(f"{base_url}account")
-        time.sleep(2)
+        # Кликаем на логотип
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CLASS_NAME, "AppHeader_header__logo__2D0X2"))
+        ).click()
         
-        driver.find_element(By.CLASS_NAME, "AppHeader_header__logo__2D0X2").click()
-        time.sleep(2)
-        
-        assert driver.current_url == base_url, \
-            f"После клика на логотип ожидался переход на {base_url}, но открыт {driver.current_url}"
+        # Проверяем переход на главную страницу
+        WebDriverWait(driver, 10).until(
+            EC.url_to_be(BASE_URL)
+        )
+        assert driver.current_url == BASE_URL, \
+            f"После клика на логотип ожидался переход на {BASE_URL}"

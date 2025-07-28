@@ -1,37 +1,64 @@
 import pytest
 from selenium.webdriver.common.by import By
-import time
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from urls import BASE_URL
+from locators import ConstructorPageLocators
 
 class TestConstructorNavigation:
-    def test_buns_section(self, driver, base_url):
-        driver.get(base_url)
-        time.sleep(2)
+    """Тесты навигации между разделами конструктора"""
+    
+    def test_buns_section(self, driver):
+        """Тест переключения между разделами 'Булки' и 'Соусы'"""
+        driver.get(BASE_URL)
         
-        driver.find_element(By.XPATH, "//span[text()='Соусы']").click()
-        time.sleep(1)
+        # Проверка активной вкладки "Булки" по умолчанию
+        WebDriverWait(driver, 10).until(
+            EC.text_to_be_present_in_element(ConstructorPageLocators.ACTIVE_TAB, "Булки")
+        )
         
-        driver.find_element(By.XPATH, "//span[text()='Булки']").click()
-        time.sleep(1)
+        # Переключение на вкладку "Соусы"
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable(ConstructorPageLocators.SAUCES_TAB)
+        ).click()
         
-        active_tab = driver.find_element(By.CSS_SELECTOR, ".tab_tab__1SPyG.tab_tab_type_current__2BEPc")
-        assert "Булки" in active_tab.text, "Раздел 'Булки' не активирован"
+        # Проверка активной вкладки "Соусы"
+        WebDriverWait(driver, 10).until(
+            EC.text_to_be_present_in_element(ConstructorPageLocators.ACTIVE_TAB, "Соусы")
+        )
+        
+        # Возврат на вкладку "Булки"
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable(ConstructorPageLocators.BUNS_TAB)
+        ).click()
+        
+        # Финальная проверка активной вкладки "Булки"
+        WebDriverWait(driver, 10).until(
+            EC.text_to_be_present_in_element(ConstructorPageLocators.ACTIVE_TAB, "Булки")
+        )
 
-    def test_sauces_section(self, driver, base_url):
-        driver.get(base_url)
-        time.sleep(2)
+    def test_sauces_section(self, driver):
+        """Тест переключения на раздел 'Соусы'"""
+        driver.get(BASE_URL)
         
-        driver.find_element(By.XPATH, "//span[text()='Соусы']").click()
-        time.sleep(1)
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable(ConstructorPageLocators.SAUCES_TAB)
+        ).click()
         
-        active_tab = driver.find_element(By.CSS_SELECTOR, ".tab_tab__1SPyG.tab_tab_type_current__2BEPc")
+        active_tab = WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located(ConstructorPageLocators.ACTIVE_TAB)
+        )
         assert "Соусы" in active_tab.text, "Раздел 'Соусы' не активирован"
 
-    def test_toppings_section(self, driver, base_url):
-        driver.get(base_url)
-        time.sleep(2)
+    def test_toppings_section(self, driver):
+        """Тест переключения на раздел 'Начинки'"""
+        driver.get(BASE_URL)
         
-        driver.find_element(By.XPATH, "//span[text()='Начинки']").click()
-        time.sleep(1)
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable(ConstructorPageLocators.TOPPINGS_TAB)
+        ).click()
         
-        active_tab = driver.find_element(By.CSS_SELECTOR, ".tab_tab__1SPyG.tab_tab_type_current__2BEPc")
+        active_tab = WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located(ConstructorPageLocators.ACTIVE_TAB)
+        )
         assert "Начинки" in active_tab.text, "Раздел 'Начинки' не активирован"

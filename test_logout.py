@@ -2,80 +2,73 @@ import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from urls import BASE_URL
 
-def test_logout_from_account(driver, base_url, test_credentials):
-    try:
-        driver.get(f"{base_url}register")
+class TestAccountLogout:
+    """Тесты выхода из аккаунта"""
+    
+    def test_logout_from_account(self, driver, login):
+        """Тест выхода из личного кабинета"""
+        login()  # Выполняем вход через фикстуру
         
+        # Переходим в личный кабинет
         WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//h2[contains(text(), 'Регистрация')]"))
-        )
-
-        name_field = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//label[contains(text(), 'Имя')]/following-sibling::input"))
-        )
-        name_field.send_keys(test_credentials["name"])
-
-        email_field = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//label[contains(text(), 'Email')]/following-sibling::input"))
-        )
-        email_field.send_keys(test_credentials["email"])
-
-        password_field = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//input[@type='password']"))
-        )
-        password_field.send_keys(test_credentials["password"])
-
-        register_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Зарегистрироваться')]"))
-        )
-        register_button.click()
-
-        WebDriverWait(driver, 10).until(
-            EC.url_contains("login")
-        )
-
-        email_input = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//input[@type='text']"))
-        )
-        email_input.send_keys(test_credentials["email"])
-
-        password_input = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//input[@type='password']"))
-        )
-        password_input.send_keys(test_credentials["password"])
-
-        login_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Войти')]"))
-        )
-        login_button.click()
-
-        account_link = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//a[contains(@href, '/account')]"))
-        )
-        account_link.click()
-
-        logout_button = WebDriverWait(driver, 10).until(
+        ).click()
+        
+        # Выходим из аккаунта
+        WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Выход')]"))
-        )
-        logout_button.click()
-
+        ).click()
+        
+        # Проверяем, что произошел выход
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//button[contains(text(), 'Войти')]"))
         )
         
-        WebDriverWait(driver, 10).until(
-            lambda d: d.current_url == base_url or d.current_url == f"{base_url}login"
-        )
-        
         assert not driver.current_url.endswith("/account"), "После выхода не должно быть доступа к личному кабинету"
+
+class TestNavigationFromAccount:
+    """Тесты навигации из личного кабинета"""
+    
+    def test_navigate_to_constructor_via_button(self, driver, login):
+        """Тест перехода в конструктор через кнопку"""
+        login()
+        driver.get(f"{BASE_URL}account")
         
-        assert WebDriverWait(driver, 5).until(
-            EC.visibility_of_element_located((By.XPATH, "//button[contains(text(), 'Войти')]"))
-        ), "Кнопка 'Войти' должна отображаться после выхода"
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//p[text()='Конструктор']"))
+        ).click()
+        
+        assert driver.current_url == BASE_URL, \
+            f"После клика на 'Конструктор' ожидался переход на {BASE_URL}"
 
-        print("\nТест успешен: выход выполнен, кнопка 'Войти' отображается")
+    def test_navigate_to_constructor_via_logo(self, driver, login):
+        """Тест перехода в конструктор через логотип"""
+        login()
+        driver.get(f"{BASE_URL}account")
+        
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CLASS_NAME, "AppHeader_header__logo__2D0X2"))
+        ).click()
+        
+        assert driver.current_url == BASE_URL, \
+            f"После клика на логотип ожидался переход на {BASE_URL}"
 
-    except Exception as e:
-        driver.save_screenshot("logout_error.png")
-        pytest.fail(f"Тест упал с ошибкой: {str(e)}\nСкриншот сохранен как logout_error.png")
+class TestPersonalAccount:
+    """Тесты личного кабинета"""
+    
+    def test_personal_account_click(self, driver):
+        """Тест перехода в личный кабинет без авторизации"""
+        driver.get(BASE_URL)
+        
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//a[@href='/account']"))
+        ).click()
+        
+        assert driver.current_url == f"{BASE_URL}login", \
+            f"Ожидался переход на страницу входа"
+        
+        assert WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.XPATH, "//h2[text()='Вход']"))
+        ).is_displayed(), "Заголовок 'Вход' не отображается"

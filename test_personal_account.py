@@ -1,16 +1,32 @@
 import pytest
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from urls import BASE_URL  # Импортируем BASE_URL из отдельного модуля
 
 class TestPersonalAccount:
-    def test_personal_account_click(self, driver, base_url):
-        driver.get(base_url)
+    """Тесты для проверки личного кабинета"""
+    
+    def test_personal_account_click(self, driver):
+        """Тест перехода в личный кабинет без авторизации"""
+        # Переходим на главную страницу
+        driver.get(BASE_URL)
         
-        account_button = driver.find_element(By.XPATH, "//a[@href='/account']")
-        
+        # Ожидаем и кликаем на кнопку личного кабинета
+        account_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//a[@href='/account']"))
+        )
         account_button.click()
         
-        assert driver.current_url == f"{base_url}login", \
-            f"Ожидался переход на {base_url}login, но открыт {driver.current_url}"
+        # Проверяем редирект на страницу входа
+        WebDriverWait(driver, 10).until(
+            EC.url_contains("login")
+        )
+        assert driver.current_url == f"{BASE_URL}login", \
+            f"Ожидался переход на {BASE_URL}login, получен {driver.current_url}"
         
-        login_title = driver.find_element(By.XPATH, "//h2[text()='Вход']")
+        # Проверяем отображение заголовка страницы входа
+        login_title = WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.XPATH, "//h2[text()='Вход']"))
+        )
         assert login_title.is_displayed(), "Заголовок 'Вход' не отображается"
