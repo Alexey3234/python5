@@ -106,9 +106,8 @@ def pytest_runtest_makereport(item, call):
             timestamp = time.strftime("%Y%m%d_%H%M%S")
             driver.save_screenshot(f"failure_{item.name}_{timestamp}.png")
 
-from urls import BASE_URL  # Убедитесь, что у вас есть файл urls.py с этим параметром
+from urls import BASE_URL 
 
 @pytest.fixture
 def base_url():
-    """Фикстура для базового URL"""
     return BASE_URL

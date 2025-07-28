@@ -2,14 +2,14 @@ import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from urls import BASE_URL  # Импортируем BASE_URL из модуля urls.py
+from urls import BASE_URL  
 
 class TestNavigationFromAccount:
     """Тесты навигации из личного кабинета"""
     
     def test_navigate_to_constructor_via_button(self, driver, login):
         """Тест перехода в конструктор через кнопку"""
-        login()  # Используем фикстуру login для авторизации
+        login()  
         
         # Переходим в личный кабинет
         WebDriverWait(driver, 10).until(
@@ -30,7 +30,7 @@ class TestNavigationFromAccount:
 
     def test_navigate_to_constructor_via_logo(self, driver, login):
         """Тест перехода в конструктор через логотип"""
-        login()  # Используем фикстуру login для авторизации
+        login() 
         
         # Переходим в личный кабинет
         WebDriverWait(driver, 10).until(

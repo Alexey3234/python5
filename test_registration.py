@@ -3,7 +3,7 @@ import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from urls import BASE_URL  # Используем BASE_URL из отдельного модуля
+from urls import BASE_URL  
 
 class TestRegistration:
     """Тесты регистрации пользователя"""
@@ -82,7 +82,7 @@ class TestRegistration:
         
         name_input.send_keys("Тестовое Имя")
         email_input.send_keys(f"test{int(time.time())}@example.com")
-        password_input.send_keys("12345")  # Пароль короче 6 символов
+        password_input.send_keys("12345")  
         
         # Отправляем форму
         WebDriverWait(driver, 10).until(
