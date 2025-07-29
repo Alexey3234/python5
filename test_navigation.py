@@ -1,8 +1,9 @@
 import pytest
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from urls import BASE_URL  
+from urls import BASE_URL
+from locators import MainPageLocators, ConstructorPageLocators, LoginPageLocators
+
 
 class TestNavigationFromAccount:
     """Тесты навигации из личного кабинета"""
@@ -13,12 +14,12 @@ class TestNavigationFromAccount:
         
         # Переходим в личный кабинет
         WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//a[contains(@href, '/account')]"))
+            EC.element_to_be_clickable(MainPageLocators.ACCOUNT_BUTTON)
         ).click()
         
         # Кликаем на кнопку "Конструктор"
         WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//p[text()='Конструктор']"))
+            EC.element_to_be_clickable(ConstructorPageLocators.CONSTRUCTOR_BUTTON)
         ).click()
         
         # Проверяем переход на главную страницу
@@ -34,12 +35,12 @@ class TestNavigationFromAccount:
         
         # Переходим в личный кабинет
         WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//a[contains(@href, '/account')]"))
+            EC.element_to_be_clickable(MainPageLocators.ACCOUNT_BUTTON)
         ).click()
         
         # Кликаем на логотип
         WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CLASS_NAME, "AppHeader_header__logo__2D0X2"))
+            EC.element_to_be_clickable(MainPageLocators.LOGO)
         ).click()
         
         # Проверяем переход на главную страницу

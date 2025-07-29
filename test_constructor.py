@@ -1,64 +1,77 @@
 import pytest
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from urls import BASE_URL
 from locators import ConstructorPageLocators
 
+
 class TestConstructorNavigation:
     """Тесты навигации между разделами конструктора"""
     
-    def test_buns_section(self, driver):
+    def test_buns_section_by_default(self, driver):
+        """Проверка, что по умолчанию активна вкладка 'Булки'"""
+        driver.get(BASE_URL)
+        
+        active_tab = WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located(ConstructorPageLocators.ACTIVE_TAB)
+        )
+        assert active_tab.text == "Булки", f"Ожидалась активная вкладка 'Булки', но получили '{active_tab.text}'"
+    
+    def test_switch_between_buns_and_sauces(self, driver):
         """Тест переключения между разделами 'Булки' и 'Соусы'"""
         driver.get(BASE_URL)
         
-        # Проверка активной вкладки "Булки" по умолчанию
-        WebDriverWait(driver, 10).until(
-            EC.text_to_be_present_in_element(ConstructorPageLocators.ACTIVE_TAB, "Булки")
+        # Ожидаем загрузки конструктора
+        WebDriverWait(driver, 15).until(
+            EC.presence_of_element_located(ConstructorPageLocators.BUNS_SECTION)
         )
         
-        # Переключение на вкладку "Соусы"
+        # Проверяем начальное состояние
+        active_tab = WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located(ConstructorPageLocators.ACTIVE_TAB)
+        )
+        assert active_tab.text == "Булки", "По умолчанию должна быть активна вкладка 'Булки'"
+        
+        # Переключаемся на соусы
         WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable(ConstructorPageLocators.SAUCES_TAB)
         ).click()
         
-        # Проверка активной вкладки "Соусы"
-        WebDriverWait(driver, 10).until(
+        # Ждем активации вкладки "Соусы"
+        WebDriverWait(driver, 15).until(
             EC.text_to_be_present_in_element(ConstructorPageLocators.ACTIVE_TAB, "Соусы")
         )
         
-        # Возврат на вкладку "Булки"
+        # Возвращаемся на булки
         WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable(ConstructorPageLocators.BUNS_TAB)
         ).click()
         
-        # Финальная проверка активной вкладки "Булки"
-        WebDriverWait(driver, 10).until(
+        # Ждем активации вкладки "Булки" с увеличенным таймаутом
+        WebDriverWait(driver, 15).until(
             EC.text_to_be_present_in_element(ConstructorPageLocators.ACTIVE_TAB, "Булки")
         )
-
-    def test_sauces_section(self, driver):
-        """Тест переключения на раздел 'Соусы'"""
-        driver.get(BASE_URL)
         
+        # Дополнительная проверка видимости раздела
         WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable(ConstructorPageLocators.SAUCES_TAB)
-        ).click()
-        
-        active_tab = WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located(ConstructorPageLocators.ACTIVE_TAB)
-        )
-        assert "Соусы" in active_tab.text, "Раздел 'Соусы' не активирован"
+            EC.visibility_of_element_located(ConstructorPageLocators.BUNS_SECTION)
+        )    
 
-    def test_toppings_section(self, driver):
+    def test_switch_to_toppings_section(self, driver):
         """Тест переключения на раздел 'Начинки'"""
         driver.get(BASE_URL)
         
-        WebDriverWait(driver, 10).until(
+        toppings_tab = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable(ConstructorPageLocators.TOPPINGS_TAB)
-        ).click()
+        )
+        toppings_tab.click()
+        
+        # Ждем появления раздела начинок
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located(ConstructorPageLocators.TOPPINGS_SECTION)
+        )
         
         active_tab = WebDriverWait(driver, 10).until(
             EC.visibility_of_element_located(ConstructorPageLocators.ACTIVE_TAB)
         )
-        assert "Начинки" in active_tab.text, "Раздел 'Начинки' не активирован"
+        assert active_tab.text == "Начинки", f"Ожидалась активная вкладка 'Начинки', но получили '{active_tab.text}'"

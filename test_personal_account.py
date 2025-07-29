@@ -1,8 +1,9 @@
 import pytest
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from urls import BASE_URL  # Импортируем BASE_URL из отдельного модуля
+from urls import BASE_URL
+from locators import MainPageLocators, LoginPageLocators
+
 
 class TestPersonalAccount:
     """Тесты для проверки личного кабинета"""
@@ -14,7 +15,7 @@ class TestPersonalAccount:
         
         # Ожидаем и кликаем на кнопку личного кабинета
         account_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//a[@href='/account']"))
+            EC.element_to_be_clickable(MainPageLocators.ACCOUNT_BUTTON)
         )
         account_button.click()
         
@@ -27,6 +28,6 @@ class TestPersonalAccount:
         
         # Проверяем отображение заголовка страницы входа
         login_title = WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located((By.XPATH, "//h2[text()='Вход']"))
+            EC.visibility_of_element_located(LoginPageLocators.LOGIN_HEADER)
         )
         assert login_title.is_displayed(), "Заголовок 'Вход' не отображается"

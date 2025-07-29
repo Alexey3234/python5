@@ -96,7 +96,6 @@ def login(driver, registered_user):
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
-    """Хук для создания скриншотов при падении тестов"""
     outcome = yield
     rep = outcome.get_result()
     
@@ -105,9 +104,3 @@ def pytest_runtest_makereport(item, call):
         if driver is not None:
             timestamp = time.strftime("%Y%m%d_%H%M%S")
             driver.save_screenshot(f"failure_{item.name}_{timestamp}.png")
-
-from urls import BASE_URL 
-
-@pytest.fixture
-def base_url():
-    return BASE_URL
